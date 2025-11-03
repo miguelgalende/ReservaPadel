@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface PistaJPARepository extends JpaRepository<Pista, Long>{
 
-    List<Pista> findPistaById(final Long id_pista);
+    List<Pista> findPistaByIdPista(final Long id_pista);
 
 }
