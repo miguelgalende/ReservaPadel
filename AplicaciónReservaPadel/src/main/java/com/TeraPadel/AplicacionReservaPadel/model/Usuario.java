@@ -32,7 +32,7 @@ public class Usuario {
     @Column(name = "contraseña_usuario", nullable = false)
     private String contraseñaUsuario;
     
-    @Column(name = "rol_usuario", nullable = false)
+    @Column(name = "rol_usuario")
     private String rolUsuario;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
