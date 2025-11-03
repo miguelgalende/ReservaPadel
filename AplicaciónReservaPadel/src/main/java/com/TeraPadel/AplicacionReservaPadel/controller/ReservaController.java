@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservas")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class ReservaController {
 
     private final ReservaService reservaService;
@@ -21,20 +21,20 @@ public class ReservaController {
 
     @PostMapping("/crear")
     public ResponseEntity<ReservaDto> crearReserva(@Valid @RequestBody PeticionCreacionReserva peticion) {
-        ReservaDto reservaCreada = reservaService.grabar(peticion);
-        return ResponseEntity.ok(reservaCreada);
+        ReservaDto reserva = reservaService.grabar(peticion);
+        return ResponseEntity.ok(reserva);
     }
 
     @GetMapping("/listar")
     public ResponseEntity<List<ReservaDto>> listarReservas() {
-        List<ReservaDto> reservas = reservaService.listar();
-        return ResponseEntity.ok(reservas);
+        List<ReservaDto> reserva = reservaService.listar();
+        return ResponseEntity.ok(reserva);
     }
 
     @PutMapping("/actualizar")
     public ResponseEntity<ReservaDto> actualizarReserva(@Valid @RequestBody PeticionActualizacionReserva peticion) {
-        ReservaDto reservaActualizada = reservaService.actualizar(peticion);
-        return ResponseEntity.ok(reservaActualizada);
+        ReservaDto reserva = reservaService.actualizar(peticion);
+        return ResponseEntity.ok(reserva);
     }
 
     @DeleteMapping("/eliminar/{id}")
@@ -47,8 +47,7 @@ public class ReservaController {
     public ResponseEntity<List<ReservaDto>> listarReservasPorUsuario(@PathVariable Long idUsuario) {
         PeticionBusquedaReserva filtro = new PeticionBusquedaReserva();
         filtro.setId_usuario(idUsuario);
-        // aquí podrías agregar un método reservaService.buscar(filtro)
-        List<ReservaDto> reservas = reservaService.listar(); // temporalmente listar todas
+        List<ReservaDto> reservas = reservaService.listar();
         return ResponseEntity.ok(reservas);
     }
 
