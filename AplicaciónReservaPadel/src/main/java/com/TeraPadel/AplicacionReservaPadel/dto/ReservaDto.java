@@ -9,10 +9,16 @@ import lombok.Setter;
 
 public class ReservaDto {
 
+    private String id_reserva;
+
+    private String id_usuario;
+
+    private String id_pista;
+
     private LocalDateTime fecha_inicio;
 
     private LocalDateTime fecha_fin;
 
-    private boolean estado;
+    private String estado_reserva;
 
 }

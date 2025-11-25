@@ -2,36 +2,28 @@ package com.TeraPadel.AplicacionReservaPadel.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.Getter;
 import lombok.Setter;
-@Entity
-@Table(name = "RESERVA")
+
 @Getter
 @Setter
-
+@Document(collection = "reservas")
 public class Reserva {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_reserva")
-    private Long idReserva;
+    private String idReserva;
 
-    @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    private String idUsuario;
 
-    @ManyToOne
-    @JoinColumn(name = "id_pista", nullable = false)
-    private Pista pista;
+    private String idPista;
 
-    @Column(name = "inicio_reserva", nullable = false)
     private LocalDateTime inicioReserva;
 
-    @Column(name = "fin_reserva", nullable = false)
     private LocalDateTime finReserva;
 
-    @Column(name = "estado_reserva", nullable = false)
     private String estadoReserva;
 
 }

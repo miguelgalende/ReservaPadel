@@ -1,14 +1,14 @@
 package com.TeraPadel.AplicacionReservaPadel.repository;
 
 import com.TeraPadel.AplicacionReservaPadel.model.Club;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ClubJPARepository extends JpaRepository<Club, Long>{
+public interface ClubMongoRepository extends MongoRepository<Club, String>{
 
-    List<Club> findClubByIdClub(final Long id_club);
+    List<Club> findClubByIdClub(final String id_club);
 
 }

@@ -11,6 +11,8 @@ public interface ReservaService {
 
     List<ReservaDto> listar();
 
-    void eliminar(Long id);
+    List<ReservaDto> listarPorUsuario(String idUsuario);
+
+    void eliminar(String id);
 
 }

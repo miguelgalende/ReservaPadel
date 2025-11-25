@@ -11,80 +11,89 @@ import java.util.stream.Collectors;
 @Service("servicioReservas")
 public class ReservaServiceImpl implements ReservaService {
 
-    private final UsuarioJPARepository usuarioJPARepository;
-    private final ReservaJPARepository reservaJPARepository;
-    private final PistaJPARepository pistaJPARepository;
+        private final UsuarioMongoRepository usuarioMongoRepository;
+        private final ReservaMongoRepository reservaMongoRepository;
+        private final PistaMongoRepository pistaMongoRepository;
 
-    public ReservaServiceImpl(
-            UsuarioJPARepository usuarioJPARepository,
-            ReservaJPARepository reservaJPARepository,
-            PistaJPARepository pistaJPARepository) {
-        this.usuarioJPARepository = usuarioJPARepository;
-        this.reservaJPARepository = reservaJPARepository;
-        this.pistaJPARepository = pistaJPARepository;
-    }
+        public ReservaServiceImpl(
+                        UsuarioMongoRepository usuarioMongoRepository,
+                        ReservaMongoRepository reservaMongoRepository,
+                        PistaMongoRepository pistaMongoRepository) {
+                this.usuarioMongoRepository = usuarioMongoRepository;
+                this.reservaMongoRepository = reservaMongoRepository;
+                this.pistaMongoRepository = pistaMongoRepository;
+        }
 
-    @Override
-    public ReservaDto grabar(final PeticionCreacionReserva data) {
+        @Override
+        public ReservaDto grabar(final PeticionCreacionReserva data) {
 
-        Usuario usuario = usuarioJPARepository.findById(data.getId_usuario())
-                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+                usuarioMongoRepository.findById(data.getId_usuario())
+                                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
-        Pista pista = pistaJPARepository.findById(data.getId_pista())
-                .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
+                pistaMongoRepository.findById(data.getId_pista())
+                                .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
 
-        Reserva reserva = new Reserva();
-        reserva.setUsuario(usuario);
-        reserva.setPista(pista);
-        reserva.setInicioReserva(data.getFecha_inicio());
-        reserva.setFinReserva(data.getFecha_fin());
-        reserva.setEstadoReserva(data.getEstado_reserva());
+                Reserva reserva = new Reserva();
+                reserva.setIdUsuario(data.getId_usuario());
+                reserva.setIdPista(data.getId_pista());
+                reserva.setInicioReserva(data.getFecha_inicio());
+                reserva.setFinReserva(data.getFecha_fin());
+                reserva.setEstadoReserva(data.getEstado_reserva());
 
-        Reserva guardada = reservaJPARepository.save(reserva);
-        return convert(guardada);
-    }
+                Reserva guardada = reservaMongoRepository.save(reserva);
+                return convert(guardada);
+        }
 
-    @Override
-    public ReservaDto actualizar(final PeticionActualizacionReserva data) {
+        @Override
+        public ReservaDto actualizar(PeticionActualizacionReserva data) {
 
-        Reserva reserva = reservaJPARepository.findById(data.getId_reserva())
-                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
+                Reserva reserva = reservaMongoRepository.findById(data.getId_reserva())
+                                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
 
-        Usuario usuario = usuarioJPARepository.findById(data.getId_usuario())
-                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+                usuarioMongoRepository.findById(data.getId_usuario())
+                                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
-        Pista pista = pistaJPARepository.findById(data.getId_pista())
-                .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
+                pistaMongoRepository.findById(data.getId_pista())
+                                .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
 
-        reserva.setUsuario(usuario);
-        reserva.setPista(pista);
-        reserva.setInicioReserva(data.getFecha_inicio());
-        reserva.setFinReserva(data.getFecha_fin());
-        reserva.setEstadoReserva(data.getEstado_reserva());
+                reserva.setIdUsuario(data.getId_usuario());
+                reserva.setIdPista(data.getId_pista());
+                reserva.setInicioReserva(data.getFecha_inicio());
+                reserva.setFinReserva(data.getFecha_fin());
+                reserva.setEstadoReserva(data.getEstado_reserva());
 
-        Reserva actualizada = reservaJPARepository.save(reserva);
-        return convert(actualizada);
-    }
+                Reserva actualizada = reservaMongoRepository.save(reserva);
+                return convert(actualizada);
+        }
 
-    @Override
-    public List<ReservaDto> listar() {
-        return reservaJPARepository.findAll().stream()
-                .map(this::convert)
-                .collect(Collectors.toList());
-    }
+        @Override
+        public List<ReservaDto> listar() {
+                return reservaMongoRepository.findAll().stream()
+                                .map(this::convert)
+                                .collect(Collectors.toList());
+        }
 
-    @Override
-    public void eliminar(final Long id) {
-        Reserva reserva = reservaJPARepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
-        reservaJPARepository.delete(reserva);
-    }
+        @Override
+        public List<ReservaDto> listarPorUsuario(String idUsuario) {
+                return reservaMongoRepository.findByIdUsuario(idUsuario)
+                                .stream()
+                                .map(this::convert)
+                                .collect(Collectors.toList());
+        }
 
-    private ReservaDto convert(final Reserva reserva) {
+        @Override
+        public void eliminar(String id) {
+                reservaMongoRepository.deleteById(id);
+        }
+
+        private ReservaDto convert(Reserva reserva) {
         ReservaDto dto = new ReservaDto();
+        dto.setId_reserva(reserva.getIdReserva());
+        dto.setId_usuario(reserva.getIdUsuario());
+        dto.setId_pista(reserva.getIdPista());
         dto.setFecha_inicio(reserva.getInicioReserva());
         dto.setFecha_fin(reserva.getFinReserva());
-        dto.setEstado("ACTIVA".equalsIgnoreCase(reserva.getEstadoReserva()));
+        dto.setEstado_reserva(reserva.getEstadoReserva());
         return dto;
     }
 }

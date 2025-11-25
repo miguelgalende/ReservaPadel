@@ -8,6 +8,8 @@ import lombok.Setter;
 
 public class ClubDto {
 
+    private String idClub;
+
     private String nombre_club;
    
     private String direccion_club;

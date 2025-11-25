@@ -1,7 +1,7 @@
 package com.TeraPadel.AplicacionReservaPadel.controller;
 
 import com.TeraPadel.AplicacionReservaPadel.model.Usuario;
-import com.TeraPadel.AplicacionReservaPadel.repository.UsuarioJPARepository;
+import com.TeraPadel.AplicacionReservaPadel.repository.UsuarioMongoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,27 +12,27 @@ import java.util.Optional;
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class UsuarioController {
-private final UsuarioJPARepository usuarioJPARepository;
+private final UsuarioMongoRepository usuarioMongoRepository;
 
-    public UsuarioController(UsuarioJPARepository usuarioJPARepository) {
-        this.usuarioJPARepository = usuarioJPARepository;
+    public UsuarioController(UsuarioMongoRepository usuarioMongoRepository) {
+        this.usuarioMongoRepository = usuarioMongoRepository;
     }
 
     @PostMapping("/registro")
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario nuevoUsuario) {
 
-        Optional<Usuario> existente = usuarioJPARepository.findByEmailUsuario(nuevoUsuario.getEmailUsuario());
+        Optional<Usuario> existente = usuarioMongoRepository.findByEmailUsuario(nuevoUsuario.getEmailUsuario());
         if (existente.isPresent()) {
             return ResponseEntity.badRequest().body("El correo ya está registrado");
         }
 
-        Usuario guardado = usuarioJPARepository.save(nuevoUsuario);
+        Usuario guardado = usuarioMongoRepository.save(nuevoUsuario);
         return ResponseEntity.ok(guardado);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario loginRequest) {
-        Optional<Usuario> usuario = usuarioJPARepository.findByEmailUsuario(loginRequest.getEmailUsuario());
+        Optional<Usuario> usuario = usuarioMongoRepository.findByEmailUsuario(loginRequest.getEmailUsuario());
 
         if (usuario.isPresent()) {
             Usuario u = usuario.get();
@@ -49,6 +49,6 @@ private final UsuarioJPARepository usuarioJPARepository;
 
     @GetMapping("/listar")
     public ResponseEntity<List<Usuario>> listarUsuarios() {
-        return ResponseEntity.ok(usuarioJPARepository.findAll());
+        return ResponseEntity.ok(usuarioMongoRepository.findAll());
     }
 }

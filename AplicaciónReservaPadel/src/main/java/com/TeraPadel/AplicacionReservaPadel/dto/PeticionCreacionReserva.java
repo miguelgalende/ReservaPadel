@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 public class PeticionCreacionReserva {
 
     @NotNull
-    private Long id_pista;
+    private String id_pista;
 
     @NotNull
-    private Long id_usuario;
+    private String id_usuario;
 
     @NotNull
     private LocalDateTime fecha_inicio;

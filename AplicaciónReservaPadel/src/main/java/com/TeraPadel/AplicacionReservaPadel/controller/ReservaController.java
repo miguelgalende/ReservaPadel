@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservas")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
+@CrossOrigin(origins = "*")
 public class ReservaController {
 
     private final ReservaService reservaService;
@@ -21,34 +21,28 @@ public class ReservaController {
 
     @PostMapping("/crear")
     public ResponseEntity<ReservaDto> crearReserva(@Valid @RequestBody PeticionCreacionReserva peticion) {
-        ReservaDto reserva = reservaService.grabar(peticion);
-        return ResponseEntity.ok(reserva);
+        return ResponseEntity.ok(reservaService.grabar(peticion));
     }
 
     @GetMapping("/listar")
     public ResponseEntity<List<ReservaDto>> listarReservas() {
-        List<ReservaDto> reserva = reservaService.listar();
-        return ResponseEntity.ok(reserva);
+        return ResponseEntity.ok(reservaService.listar());
     }
 
     @PutMapping("/actualizar")
     public ResponseEntity<ReservaDto> actualizarReserva(@Valid @RequestBody PeticionActualizacionReserva peticion) {
-        ReservaDto reserva = reservaService.actualizar(peticion);
-        return ResponseEntity.ok(reserva);
+        return ResponseEntity.ok(reservaService.actualizar(peticion));
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarReserva(@PathVariable String id) {
         reservaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity<List<ReservaDto>> listarReservasPorUsuario(@PathVariable Long idUsuario) {
-        PeticionBusquedaReserva filtro = new PeticionBusquedaReserva();
-        filtro.setId_usuario(idUsuario);
-        List<ReservaDto> reservas = reservaService.listar();
-        return ResponseEntity.ok(reservas);
+    public ResponseEntity<List<ReservaDto>> listarReservasPorUsuario(@PathVariable String idUsuario) {
+        return ResponseEntity.ok(reservaService.listarPorUsuario(idUsuario));
     }
 
 }

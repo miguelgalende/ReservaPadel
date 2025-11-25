@@ -1,15 +1,17 @@
 package com.TeraPadel.AplicacionReservaPadel.repository;
 
 import com.TeraPadel.AplicacionReservaPadel.model.Reserva;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface ReservaJPARepository extends JpaRepository<Reserva, Long>{
+public interface ReservaMongoRepository extends MongoRepository<Reserva, String>{
 
     List<Reserva> findByInicioReserva(LocalDateTime inicioReserva);
+
+    List<Reserva> findByIdUsuario(String idUsuario);
 
 }

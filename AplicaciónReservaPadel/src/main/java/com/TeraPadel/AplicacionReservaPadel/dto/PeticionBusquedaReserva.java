@@ -13,6 +13,6 @@ public class PeticionBusquedaReserva {
 
     private LocalDateTime fechaCreacionHasta;
 
-    private Long id_usuario;
+    private String id_usuario;
 
 }
