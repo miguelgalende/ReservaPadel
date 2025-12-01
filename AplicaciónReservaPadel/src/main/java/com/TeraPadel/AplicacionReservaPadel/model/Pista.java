@@ -17,4 +17,6 @@ public class Pista {
 
     private String idClub;
 
+    private String imagenPista;
+
 }

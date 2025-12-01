@@ -19,4 +19,6 @@ public class Club {
     
     private String telefonoClub;
 
+    private String imagenClub;
+
 }

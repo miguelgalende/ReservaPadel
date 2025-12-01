@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface PistaMongoRepository extends MongoRepository<Pista, String>{
 
-    List<Pista> findPistaByIdPista(final String id_pista);
+    List<Pista> findByIdClub(String idClub);
 
 }

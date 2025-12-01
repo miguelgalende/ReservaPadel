@@ -10,7 +10,9 @@ public class PistaDto {
 
     private String idPista;
 
-    private String nombre_pista;
+    private String nombrePista;
 
     private String idClub;
+
+    private String imagenPista;
 }

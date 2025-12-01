@@ -16,4 +16,6 @@ public class ClubDto {
     
     private String telefono_club;
 
+    private String imagenClub;
+
 }

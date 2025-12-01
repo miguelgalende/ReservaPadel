@@ -1,7 +1,11 @@
 package com.TeraPadel.AplicacionReservaPadel.controller;
 
+import com.TeraPadel.AplicacionReservaPadel.dto.LoginRequest;
+import com.TeraPadel.AplicacionReservaPadel.dto.LoginResponse;
 import com.TeraPadel.AplicacionReservaPadel.model.Usuario;
 import com.TeraPadel.AplicacionReservaPadel.repository.UsuarioMongoRepository;
+import com.TeraPadel.AplicacionReservaPadel.security.JwtUtil;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +17,11 @@ import java.util.Optional;
 @CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class UsuarioController {
 private final UsuarioMongoRepository usuarioMongoRepository;
+private final JwtUtil jwtUtil;
 
-    public UsuarioController(UsuarioMongoRepository usuarioMongoRepository) {
+    public UsuarioController(UsuarioMongoRepository usuarioMongoRepository, JwtUtil jwtUtil) {
         this.usuarioMongoRepository = usuarioMongoRepository;
+        this.jwtUtil=jwtUtil;
     }
 
     @PostMapping("/registro")
@@ -31,21 +37,35 @@ private final UsuarioMongoRepository usuarioMongoRepository;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Usuario loginRequest) {
-        Optional<Usuario> usuario = usuarioMongoRepository.findByEmailUsuario(loginRequest.getEmailUsuario());
-
-        if (usuario.isPresent()) {
-            Usuario u = usuario.get();
-
-            if (u.getContraseñaUsuario().equals(loginRequest.getContraseñaUsuario())) {
-                return ResponseEntity.ok(u);
-            } else {
-                return ResponseEntity.status(401).body("Contraseña incorrecta");
-            }
-        } else {
-            return ResponseEntity.status(404).body("Usuario no encontrado");
-        }
+public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    if (loginRequest == null 
+        || loginRequest.getEmailUsuario() == null 
+        || loginRequest.getContraseñaUsuario() == null) {
+        return ResponseEntity.badRequest().body("Email y contraseña son obligatorios");
     }
+
+    Optional<Usuario> usuarioOpt = usuarioMongoRepository.findByEmailUsuario(loginRequest.getEmailUsuario());
+
+    if (usuarioOpt.isEmpty()) {
+        return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+
+    Usuario usuario = usuarioOpt.get();
+
+    if (!loginRequest.getContraseñaUsuario().equals(usuario.getContraseñaUsuario())) {
+        return ResponseEntity.status(401).body("Contraseña incorrecta");
+    }
+
+    String token;
+    try {
+        token = jwtUtil.generarToken(usuario.getEmailUsuario());
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body("Error generando token");
+    }
+
+    return ResponseEntity.ok(new LoginResponse(token, usuario));
+}
 
     @GetMapping("/listar")
     public ResponseEntity<List<Usuario>> listarUsuarios() {
