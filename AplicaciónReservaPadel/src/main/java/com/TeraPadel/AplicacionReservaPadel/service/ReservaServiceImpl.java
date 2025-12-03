@@ -132,8 +132,31 @@ public class ReservaServiceImpl implements ReservaService {
                 Reserva reserva = reservaMongoRepository.findById(id)
                                 .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
 
-                if (reserva.getFinReserva().isBefore(java.time.LocalDateTime.now())) {
+                if (reserva.getFinReserva().isBefore(LocalDateTime.now())) {
                         throw new RuntimeException("No se pueden cancelar reservas pasadas");
+                }
+
+                Pista pista = pistaMongoRepository.findById(reserva.getIdPista())
+                                .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
+
+                String fecha = reserva.getInicioReserva().toLocalDate().toString();
+
+                if (pista.getOcupadasPorDia() != null &&
+                                pista.getOcupadasPorDia().containsKey(fecha)) {
+
+                        List<String> bloquesReserva = generarBloques(
+                                        reserva.getInicioReserva(),
+                                        reserva.getFinReserva());
+
+                        pista.getOcupadasPorDia()
+                                        .get(fecha)
+                                        .removeAll(bloquesReserva);
+
+                        if (pista.getOcupadasPorDia().get(fecha).isEmpty()) {
+                                pista.getOcupadasPorDia().remove(fecha);
+                        }
+
+                        pistaMongoRepository.save(pista);
                 }
 
                 reservaMongoRepository.deleteById(id);
