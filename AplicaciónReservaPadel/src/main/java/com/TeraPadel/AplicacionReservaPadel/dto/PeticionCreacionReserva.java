@@ -5,23 +5,27 @@ import lombok.Setter;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Getter
 @Setter
 
 public class PeticionCreacionReserva {
 
     @NotNull
-    private String id_pista;
+    private String idPista;
 
     @NotNull
-    private String id_usuario;
+    private String idUsuario;
 
     @NotNull
-    private LocalDateTime fecha_inicio;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime inicioReserva;
 
     @NotNull
-    private LocalDateTime fecha_fin;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime finReserva;
 
-    private String estado_reserva = "ACTIVA";
+    private String estadoReserva = "ACTIVA";
 
 }

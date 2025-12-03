@@ -5,6 +5,11 @@ import com.TeraPadel.AplicacionReservaPadel.model.*;
 import com.TeraPadel.AplicacionReservaPadel.repository.*;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,40 +32,81 @@ public class ReservaServiceImpl implements ReservaService {
         @Override
         public ReservaDto grabar(final PeticionCreacionReserva data) {
 
-                usuarioMongoRepository.findById(data.getId_usuario())
+                usuarioMongoRepository.findById(data.getIdUsuario())
                                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
-                pistaMongoRepository.findById(data.getId_pista())
+                Pista pista = pistaMongoRepository.findById(data.getIdPista())
                                 .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
 
+                if (pista.getOcupadasPorDia() == null) {
+                        pista.setOcupadasPorDia(new HashMap<>());
+                }
+
+                LocalDateTime inicioDT = data.getInicioReserva();
+                LocalDateTime finDT = data.getFinReserva();
+
+                String fecha = inicioDT.toLocalDate().toString();
+
+                List<String> bloques = generarBloques(inicioDT, finDT);
+
+                List<String> ocupadasDia = pista.getOcupadasPorDia()
+                                .getOrDefault(fecha, new ArrayList<>());
+
+                for (String bloque : bloques) {
+                        if (ocupadasDia.contains(bloque)) {
+                                throw new RuntimeException("La hora " + bloque + " ya está reservada ese día");
+                        }
+                }
+
+                ocupadasDia.addAll(bloques);
+                pista.getOcupadasPorDia().put(fecha, ocupadasDia);
+
+                pistaMongoRepository.save(pista);
+
                 Reserva reserva = new Reserva();
-                reserva.setIdUsuario(data.getId_usuario());
-                reserva.setIdPista(data.getId_pista());
-                reserva.setInicioReserva(data.getFecha_inicio());
-                reserva.setFinReserva(data.getFecha_fin());
-                reserva.setEstadoReserva(data.getEstado_reserva());
+                reserva.setIdUsuario(data.getIdUsuario());
+                reserva.setIdPista(data.getIdPista());
+                reserva.setInicioReserva(data.getInicioReserva());
+                reserva.setFinReserva(data.getFinReserva());
+                reserva.setEstadoReserva(data.getEstadoReserva());
 
                 Reserva guardada = reservaMongoRepository.save(reserva);
                 return convert(guardada);
         }
 
+        private List<String> generarBloques(LocalDateTime inicioDT, LocalDateTime finDT) {
+                List<String> bloques = new ArrayList<>();
+
+                LocalDateTime actual = inicioDT;
+
+                while (!actual.isAfter(finDT.minusMinutes(1))) {
+                        String hora = actual.toLocalTime()
+                                        .format(DateTimeFormatter.ofPattern("HH:mm"));
+                        bloques.add(hora);
+
+                        actual = actual.plusMinutes(30);
+                }
+
+                return bloques;
+        }
+
         @Override
         public ReservaDto actualizar(PeticionActualizacionReserva data) {
 
-                Reserva reserva = reservaMongoRepository.findById(data.getId_reserva())
+                Reserva reserva = reservaMongoRepository.findById(data.getIdReserva())
                                 .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
 
-                usuarioMongoRepository.findById(data.getId_usuario())
+                usuarioMongoRepository.findById(data.getIdUsuario())
                                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
-                pistaMongoRepository.findById(data.getId_pista())
+                pistaMongoRepository.findById(data.getIdPista())
                                 .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
 
-                reserva.setIdUsuario(data.getId_usuario());
-                reserva.setIdPista(data.getId_pista());
-                reserva.setInicioReserva(data.getFecha_inicio());
-                reserva.setFinReserva(data.getFecha_fin());
-                reserva.setEstadoReserva(data.getEstado_reserva());
+                reserva.setIdUsuario(data.getIdUsuario());
+                reserva.setIdPista(data.getIdPista());
+                reserva.setInicioReserva(data.getInicioReserva());
+                reserva.setFinReserva(data.getFinReserva());
+                reserva.setEstadoReserva(data.getEstadoReserva());
 
                 Reserva actualizada = reservaMongoRepository.save(reserva);
                 return convert(actualizada);
@@ -83,17 +129,24 @@ public class ReservaServiceImpl implements ReservaService {
 
         @Override
         public void eliminar(String id) {
+                Reserva reserva = reservaMongoRepository.findById(id)
+                                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
+
+                if (reserva.getFinReserva().isBefore(java.time.LocalDateTime.now())) {
+                        throw new RuntimeException("No se pueden cancelar reservas pasadas");
+                }
+
                 reservaMongoRepository.deleteById(id);
         }
 
         private ReservaDto convert(Reserva reserva) {
-        ReservaDto dto = new ReservaDto();
-        dto.setId_reserva(reserva.getIdReserva());
-        dto.setId_usuario(reserva.getIdUsuario());
-        dto.setId_pista(reserva.getIdPista());
-        dto.setFecha_inicio(reserva.getInicioReserva());
-        dto.setFecha_fin(reserva.getFinReserva());
-        dto.setEstado_reserva(reserva.getEstadoReserva());
-        return dto;
-    }
+                ReservaDto dto = new ReservaDto();
+                dto.setIdReserva(reserva.getIdReserva());
+                dto.setIdUsuario(reserva.getIdUsuario());
+                dto.setIdPista(reserva.getIdPista());
+                dto.setInicioReserva(reserva.getInicioReserva());
+                dto.setFinReserva(reserva.getFinReserva());
+                dto.setEstadoReserva(reserva.getEstadoReserva());
+                return dto;
+        }
 }

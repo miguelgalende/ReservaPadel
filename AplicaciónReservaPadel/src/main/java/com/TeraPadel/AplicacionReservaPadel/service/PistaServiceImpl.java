@@ -1,5 +1,7 @@
 package com.TeraPadel.AplicacionReservaPadel.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,29 @@ public class PistaServiceImpl implements PistaService {
 
     @Override
     public Pista crear(Pista pista) {
+        if (pista.getHorario() == null || pista.getHorario().isEmpty()) {
+            pista.setHorario(generarHorario());
+        }
+
+        if (pista.getOcupadasPorDia() == null) {
+            pista.setOcupadasPorDia(new HashMap<>());
+        }
+
         return pistaRepo.save(pista);
+    }
+
+    private List<String> generarHorario() {
+        List<String> horas = new ArrayList<>();
+        int inicio = 9 * 60;
+        int fin = 22 * 60;
+
+        for (int m = inicio; m < fin; m += 30) {
+            int h = m / 60;
+            int min = m % 60;
+            horas.add(String.format("%02d:%02d", h, min));
+        }
+
+        return horas;
     }
 
     @Override
@@ -34,9 +58,8 @@ public class PistaServiceImpl implements PistaService {
     }
 
     @Override
-    public Pista buscarPorId(String id) {
+    public Pista obtenerPorId(String id) {
         return pistaRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
+                .orElseThrow(() -> new NotFoundException("Pista no encontrada"));
     }
 }
-

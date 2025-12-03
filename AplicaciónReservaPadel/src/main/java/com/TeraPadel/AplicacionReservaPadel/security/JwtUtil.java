@@ -37,4 +37,8 @@ public class JwtUtil {
             return false;
         }
     }
+
+    public String extraerUsername(String token) {
+        return obtenerEmail(token);
+    }
 }

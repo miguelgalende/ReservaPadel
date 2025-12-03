@@ -13,20 +13,20 @@ import jakarta.validation.constraints.NotNull;
 public class PeticionActualizacionReserva {
 
     @NotNull
-    private String id_reserva;
+    private String idReserva;
 
     @NotNull
-    private String id_pista;
+    private String idPista;
 
     @NotNull
-    private String id_usuario;
+    private String idUsuario;
 
     @NotNull
-    private LocalDateTime fecha_inicio;
+    private LocalDateTime inicioReserva;
 
     @NotNull
-    private LocalDateTime fecha_fin;
+    private LocalDateTime finReserva;
 
-    private String estado_reserva;
+    private String estadoReserva;
 
 }

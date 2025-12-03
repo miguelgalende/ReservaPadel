@@ -1,6 +1,9 @@
 package com.TeraPadel.AplicacionReservaPadel.dto;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,16 +12,18 @@ import lombok.Setter;
 
 public class ReservaDto {
 
-    private String id_reserva;
+    private String idReserva;
 
-    private String id_usuario;
+    private String idUsuario;
 
-    private String id_pista;
+    private String idPista;
 
-    private LocalDateTime fecha_inicio;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime inicioReserva;
 
-    private LocalDateTime fecha_fin;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime finReserva;
 
-    private String estado_reserva;
+    private String estadoReserva;
 
 }

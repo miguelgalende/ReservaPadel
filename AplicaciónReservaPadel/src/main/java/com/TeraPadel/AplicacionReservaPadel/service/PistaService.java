@@ -11,5 +11,5 @@ public interface PistaService {
 
     void eliminar(String id);
 
-    Pista buscarPorId(String id);
+    Pista obtenerPorId(String id);
 }

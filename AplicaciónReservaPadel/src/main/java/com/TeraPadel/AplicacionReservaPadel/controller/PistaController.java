@@ -17,6 +17,12 @@ public class PistaController {
         this.pistaService = pistaService;
     }
 
+    @GetMapping("/{id}")
+public ResponseEntity<Pista> obtenerPorId(@PathVariable String id) {
+    Pista pista = pistaService.obtenerPorId(id);
+    return ResponseEntity.ok(pista);
+}
+
     @PostMapping("/crear")
     public ResponseEntity<Pista> crear(@RequestBody Pista pista) {
         return ResponseEntity.ok(pistaService.crear(pista));
